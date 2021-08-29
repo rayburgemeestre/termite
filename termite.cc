@@ -470,6 +470,11 @@ static void update_selection(VteTerminal *vte, const select_info *select) {
     }
 
     vte_terminal_copy_primary(vte);
+#if VTE_CHECK_VERSION(0, 50, 0)
+    vte_terminal_copy_clipboard_format(vte, VTE_FORMAT_TEXT);
+#else
+    vte_terminal_copy_clipboard(vte);
+#endif
 }
 
 static void enter_command_mode(VteTerminal *vte, select_info *select) {
@@ -948,10 +953,20 @@ gboolean key_press_cb(VteTerminal *vte, GdkEventKey *event, keybind_info *info) 
             case GDK_KEY_n:
                 vte_terminal_search_find_next(vte);
                 vte_terminal_copy_primary(vte);
+#if VTE_CHECK_VERSION(0, 50, 0)
+                vte_terminal_copy_clipboard_format(vte, VTE_FORMAT_TEXT);
+#else
+                vte_terminal_copy_clipboard(vte);
+#endif
                 break;
             case GDK_KEY_N:
                 vte_terminal_search_find_previous(vte);
                 vte_terminal_copy_primary(vte);
+#if VTE_CHECK_VERSION(0, 50, 0)
+                vte_terminal_copy_clipboard_format(vte, VTE_FORMAT_TEXT);
+#else
+                vte_terminal_copy_clipboard(vte);
+#endif
                 break;
             case GDK_KEY_u:
                 search(vte, url_regex, false);
@@ -1038,6 +1053,54 @@ gboolean key_press_cb(VteTerminal *vte, GdkEventKey *event, keybind_info *info) 
             case GDK_KEY_equal:
                 reset_font_scale(vte, info->config.font_scale);
                 return TRUE;
+            case GDK_KEY_0: // white
+            {
+                GdkRGBA color1 {0, 0, 0, 1};
+                vte_terminal_set_color_foreground(vte, &color1);
+                GdkRGBA color {1, 1, 1, 1};
+                vte_terminal_set_color_background(vte, &color);
+                return TRUE;
+            }
+            case GDK_KEY_9: // black
+            {
+                GdkRGBA color1 {1, 1, 1, 1};
+                vte_terminal_set_color_foreground(vte, &color1);
+                GdkRGBA color {0, 0, 0, 1};
+                vte_terminal_set_color_background(vte, &color);
+                return TRUE;
+            }
+            case GDK_KEY_2: // green
+            {
+                GdkRGBA color1 {0, 0, 0, 1};
+                vte_terminal_set_color_foreground(vte, &color1);
+                GdkRGBA color {85/255., 224/255., 150/255., 1};
+                vte_terminal_set_color_background(vte, &color);
+                return TRUE;
+            }
+            case GDK_KEY_3: // red
+            {
+                GdkRGBA color1 {1, 1, 1, 1};
+                vte_terminal_set_color_foreground(vte, &color1);
+                GdkRGBA color {224/255., 85/255., 85/255., 1};
+                vte_terminal_set_color_background(vte, &color);
+                return TRUE;
+            }
+            case GDK_KEY_5: // original color
+            {
+                GdkRGBA color1 {0, 0, 0, 1};
+                vte_terminal_set_color_foreground(vte, &color1);
+                GdkRGBA color {90/255., 85/255., 224/255., 1};
+                vte_terminal_set_color_background(vte, &color);
+                return TRUE;
+            }
+            case GDK_KEY_7: // yellow in progress color
+            {
+                GdkRGBA color1 {1, 0, 0, 1};
+                vte_terminal_set_color_foreground(vte, &color1);
+                GdkRGBA color {224/255., 194/255., 85/255., 1};
+                vte_terminal_set_color_background(vte, &color);
+                return TRUE;
+            }
             default:
                 if (modify_key_feed(event, info, modify_table))
                     return TRUE;
@@ -1268,6 +1331,11 @@ void search(VteTerminal *vte, const char *pattern, bool reverse) {
     }
 
     vte_terminal_copy_primary(vte);
+#if VTE_CHECK_VERSION(0, 50, 0)
+    vte_terminal_copy_clipboard_format(vte, VTE_FORMAT_TEXT);
+#else
+    vte_terminal_copy_clipboard(vte);
+#endif
 }
 
 void overlay_show(search_panel_info *info, overlay_mode mode, VteTerminal *vte) {
