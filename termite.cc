@@ -1059,14 +1059,20 @@ gboolean key_press_cb(VteTerminal *vte, GdkEventKey *event, keybind_info *info) 
                 vte_terminal_set_color_foreground(vte, &color1);
                 GdkRGBA color {1, 1, 1, 1};
                 vte_terminal_set_color_background(vte, &color);
+                override_background_color(GTK_WIDGET(info->window), &color);
                 return TRUE;
             }
             case GDK_KEY_9: // black
             {
-                GdkRGBA color1 {1, 1, 1, 1};
+                // Dracula theme: 40, 42, 54, 1
+                GdkRGBA color1 {0xf8 / 255., 0xf8 / 255., 0xf2 / 255., 1};
                 vte_terminal_set_color_foreground(vte, &color1);
-                GdkRGBA color {0, 0, 0, 1};
+                GdkRGBA color {40  / 255., 42  / 255., 54  / 255., 1};
                 vte_terminal_set_color_background(vte, &color);
+                //vte_terminal_set_color_background(vte, &*color);
+                override_background_color(GTK_WIDGET(info->window), &color);
+                system("killall -SIGUSR1 termite");
+
                 return TRUE;
             }
             case GDK_KEY_2: // green
@@ -1075,6 +1081,7 @@ gboolean key_press_cb(VteTerminal *vte, GdkEventKey *event, keybind_info *info) 
                 vte_terminal_set_color_foreground(vte, &color1);
                 GdkRGBA color {85/255., 224/255., 150/255., 1};
                 vte_terminal_set_color_background(vte, &color);
+                override_background_color(GTK_WIDGET(info->window), &color);
                 return TRUE;
             }
             case GDK_KEY_3: // red
@@ -1083,14 +1090,16 @@ gboolean key_press_cb(VteTerminal *vte, GdkEventKey *event, keybind_info *info) 
                 vte_terminal_set_color_foreground(vte, &color1);
                 GdkRGBA color {224/255., 85/255., 85/255., 1};
                 vte_terminal_set_color_background(vte, &color);
+                override_background_color(GTK_WIDGET(info->window), &color);
                 return TRUE;
             }
             case GDK_KEY_5: // original color
             {
-                GdkRGBA color1 {0, 0, 0, 1};
+                GdkRGBA color1 {1, 1, 1, 1};
                 vte_terminal_set_color_foreground(vte, &color1);
                 GdkRGBA color {90/255., 85/255., 224/255., 1};
                 vte_terminal_set_color_background(vte, &color);
+                override_background_color(GTK_WIDGET(info->window), &color);
                 return TRUE;
             }
             case GDK_KEY_7: // yellow in progress color
@@ -1099,6 +1108,7 @@ gboolean key_press_cb(VteTerminal *vte, GdkEventKey *event, keybind_info *info) 
                 vte_terminal_set_color_foreground(vte, &color1);
                 GdkRGBA color {224/255., 194/255., 85/255., 1};
                 vte_terminal_set_color_background(vte, &color);
+                override_background_color(GTK_WIDGET(info->window), &color);
                 return TRUE;
             }
             default:
@@ -1786,6 +1796,7 @@ int main(int argc, char **argv) {
                 icon ? nullptr : &icon, &show_scrollbar);
 
     reload_config = [&]{
+        printf("Reloading Config! Inject stuff here!\n");
         load_config(GTK_WINDOW(window), vte, scrollbar, hbox, &info.config,
                     nullptr, nullptr);
     };
